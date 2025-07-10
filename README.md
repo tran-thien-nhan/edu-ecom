@@ -1,36 +1,105 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+---
 
-## Getting Started
+# 📘 Edu Ecommerce
 
-First, run the development server:
+Dự án web hiển thị và bán khóa học, được xây dựng bằng:
+
+* [Next.js](https://nextjs.org/)
+* [Tailwind CSS](https://tailwindcss.com/)
+* Google Gemini API (cho gợi ý AI)
+
+---
+
+## 🚀 Cài đặt và chạy dự án
+
+### 1. Clone repo
+
+```bash
+git clone https://github.com/your-username/your-repo.git
+cd your-repo
+```
+
+### 2. Cài đặt dependencies
+
+```bash
+npm install
+# hoặc
+yarn
+```
+
+### 3. Thêm biến môi trường
+
+Tạo file `.env.local` ở thư mục gốc và thêm các biến sau:
+
+```
+NEXT_PUBLIC_GEMINI_API_KEY=your_api_key_here
+```
+
+> 🔑 Bạn cần một API key từ [Google AI Studio](https://makersuite.google.com/app) để sử dụng Gemini API.
+
+### 4. Chạy ứng dụng ở môi trường phát triển
 
 ```bash
 npm run dev
-# or
+# hoặc
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Ứng dụng sẽ chạy tại: [http://localhost:3000](http://localhost:3000)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🛠 Build để triển khai
 
-## Learn More
+```bash
+npm run build
+npm start
+```
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 📁 Cấu trúc thư mục
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```
+.
+├── pages/              # Routing của Next.js (dùng Pages Router)
+├── public/             # Assets tĩnh (ảnh, font, v.v.)
+├── styles/             # Tailwind CSS và các file style
+├── _components/        # Các component UI tái sử dụng
+├── _hooks/             # Các custom hooks
+├── _context/           # React Context (giỏ hàng, lịch sử, v.v.)
+├── _interface/         # TypeScript interfaces
+├── _utils/             # Hàm tiện ích (format tiền tệ, gọi API...)
+├── _data/              # Mock data (nếu có)
+├── .env.local          # Biến môi trường (không commit lên Git)
+└── ...
+```
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 📦 Tech stack
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+* ✅ Next.js (Pages Router)
+* 🎨 Tailwind CSS
+* 🤖 Gemini API (qua fetch)
+* 💾 localStorage (giỏ hàng, yêu thích, lịch sử)
+* 💡 React Context API (quản lý trạng thái toàn cục)
+
+---
+
+## ✅ Các tính năng chính
+
+* [x] Hiển thị danh sách khóa học
+* [x] Thêm vào giỏ hàng, xem chi tiết
+* [x] Lưu khóa học yêu thích
+* [x] Lịch sử đã xem
+* [x] Gợi ý khóa học bằng AI (Gemini)
+
+---
+
+## 📌 Ghi chú
+
+* Không sử dụng App Router, Server Actions, hay Shadcn/UI.
+* Dự án đơn giản, dễ mở rộng và tích hợp thêm tính năng AI hoặc thanh toán thực tế.
+
+---
