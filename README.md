@@ -1,10 +1,9 @@
-````markdown
-# 📘 Edu Ecommerce
+### 📘 Edu Ecommerce
 
 Dự án web hiển thị và bán khóa học, được xây dựng bằng:
 
-- [Next.js](https://nextjs.org/)
-- [Tailwind CSS](https://tailwindcss.com/)
+- Next.js
+- Tailwind CSS
 - Google Gemini API (cho gợi ý AI)
 
 ---
@@ -16,7 +15,7 @@ Dự án web hiển thị và bán khóa học, được xây dựng bằng:
 ```bash
 git clone https://github.com/tran-thien-nhan/edu-ecom.git
 cd your-repo
-````
+```
 
 ### 2. Cài đặt dependencies
 
