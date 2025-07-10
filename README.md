@@ -1,12 +1,11 @@
----
-
+````markdown
 # 📘 Edu Ecommerce
 
 Dự án web hiển thị và bán khóa học, được xây dựng bằng:
 
-* [Next.js](https://nextjs.org/)
-* [Tailwind CSS](https://tailwindcss.com/)
-* Google Gemini API (cho gợi ý AI)
+- [Next.js](https://nextjs.org/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- Google Gemini API (cho gợi ý AI)
 
 ---
 
@@ -17,7 +16,7 @@ Dự án web hiển thị và bán khóa học, được xây dựng bằng:
 ```bash
 git clone https://github.com/your-username/your-repo.git
 cd your-repo
-```
+````
 
 ### 2. Cài đặt dependencies
 
@@ -29,9 +28,9 @@ yarn
 
 ### 3. Thêm biến môi trường
 
-Tạo file `.env.local` ở thư mục gốc và thêm các biến sau:
+Tạo file `.env.local` ở thư mục gốc và thêm:
 
-```
+```env
 NEXT_PUBLIC_GEMINI_API_KEY=your_api_key_here
 ```
 
@@ -45,7 +44,7 @@ npm run dev
 yarn dev
 ```
 
-Ứng dụng sẽ chạy tại: [http://localhost:3000](http://localhost:3000)
+Mở trình duyệt và truy cập [http://localhost:3000](http://localhost:3000)
 
 ---
 
@@ -60,7 +59,7 @@ npm start
 
 ## 📁 Cấu trúc thư mục
 
-```
+```plaintext
 .
 ├── pages/              # Routing của Next.js (dùng Pages Router)
 ├── public/             # Assets tĩnh (ảnh, font, v.v.)
@@ -71,8 +70,7 @@ npm start
 ├── _interface/         # TypeScript interfaces
 ├── _utils/             # Hàm tiện ích (format tiền tệ, gọi API...)
 ├── _data/              # Mock data (nếu có)
-├── .env.local          # Biến môi trường (không commit lên Git)
-└── ...
+└── .env.local          # Biến môi trường (không commit lên Git)
 ```
 
 ---
@@ -94,12 +92,3 @@ npm start
 * [x] Lưu khóa học yêu thích
 * [x] Lịch sử đã xem
 * [x] Gợi ý khóa học bằng AI (Gemini)
-
----
-
-## 📌 Ghi chú
-
-* Không sử dụng App Router, Server Actions, hay Shadcn/UI.
-* Dự án đơn giản, dễ mở rộng và tích hợp thêm tính năng AI hoặc thanh toán thực tế.
-
----
