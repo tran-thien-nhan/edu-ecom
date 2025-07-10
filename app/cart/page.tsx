@@ -20,7 +20,7 @@ export default function CartPage() {
     const [toastMessage, setToastMessage] = useState<string | null>(null);
     const [showFireworks, setShowFireworks] = useState(false);
     const router = useRouter();
-    const { addToCart, removeFromCart, clearCart} = useCart();
+    const { addToCart, removeFromCart, clearCart } = useCart();
 
     useEffect(() => {
         const crt = JSON.parse(localStorage.getItem('cart') || '[]');
@@ -88,6 +88,17 @@ export default function CartPage() {
         addToCart(product);
     };
 
+    const handleCheckout = () => {
+        // Clear cart
+        setCart([]);
+        localStorage.removeItem('cart');
+        clearCart();
+
+        // Show success message
+        setToastMessage("Thanh toán thành công! Cảm ơn bạn đã mua hàng.");
+        setShowFireworks(true);
+    };
+
     return (
         <div className="container mx-auto px-4 py-6">
             <Fireworks isVisible={showFireworks} onAnimationEnd={() => setShowFireworks(false)} />
@@ -142,7 +153,9 @@ export default function CartPage() {
                                     <span className="text-gray-600">Tổng tiền ({cart.length} sản phẩm)</span>
                                     <span className="font-bold text-xl">{formatCurrency(cartTotal)}</span>
                                 </div>
-                                <button className="w-full mt-4 bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-indigo-700 transition-colors">
+                                <button
+                                    onClick={handleCheckout}
+                                    className="w-full mt-4 bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-indigo-700 transition-colors">
                                     Tiến hành thanh toán
                                 </button>
                             </div>
