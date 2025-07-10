@@ -168,13 +168,13 @@ export default function Home() {
               </div>
 
               {/* Lọc theo loại và giá */}
-              <div className="flex items-center space-x-4 text-sm w-full md:w-auto">
-                <div className="flex items-center space-x-2">
+              <div className="flex flex-col md:flex-row gap-4 w-full text-sm">
+                <div className="flex items-center space-x-2 w-full md:w-auto">
                   <span className="font-semibold text-gray-700">Loại:</span>
                   <select
                     value={categoryFilter}
                     onChange={e => setCategoryFilter(e.target.value)}
-                    className="border rounded-md px-2 py-1 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                    className="w-full md:w-auto border rounded-md px-2 py-1 focus:outline-none focus:ring-2 focus:ring-indigo-400"
                   >
                     {courseCategories.map(category => (
                       <option key={category} value={category}>
@@ -183,12 +183,12 @@ export default function Home() {
                     ))}
                   </select>
                 </div>
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-2 w-full md:w-auto">
                   <span className="font-semibold text-gray-700">Giá:</span>
                   <select
                     value={priceFilter}
                     onChange={e => setPriceFilter(e.target.value)}
-                    className="border rounded-md px-2 py-1 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                    className="w-full md:w-auto border rounded-md px-2 py-1 focus:outline-none focus:ring-2 focus:ring-indigo-400"
                   >
                     <option value="all">Tất cả</option>
                     <option value="<500">&lt; 500K</option>
