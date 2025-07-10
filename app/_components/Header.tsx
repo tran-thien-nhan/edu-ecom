@@ -12,7 +12,6 @@ export default function Header() {
     const [favorites, setFavorites] = useState<number[]>([]);
 
     useEffect(() => {
-        // Load favorites từ localStorage
         const favoritesData = JSON.parse(localStorage.getItem('favorites') || '[]');
         setFavorites(favoritesData);
 

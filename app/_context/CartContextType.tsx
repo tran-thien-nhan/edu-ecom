@@ -27,8 +27,13 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
         setCart(cart.filter((p) => p.id !== id));
     };
 
+    const clearCart = () => {
+        setCart([]);
+        localStorage.removeItem("cart");
+    };
+
     return (
-        <CartContext.Provider value={{ cart, addToCart, removeFromCart }}>
+        <CartContext.Provider value={{ cart, addToCart, removeFromCart, clearCart }}>
             {children}
         </CartContext.Provider>
     );

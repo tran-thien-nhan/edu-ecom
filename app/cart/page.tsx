@@ -20,7 +20,7 @@ export default function CartPage() {
     const [toastMessage, setToastMessage] = useState<string | null>(null);
     const [showFireworks, setShowFireworks] = useState(false);
     const router = useRouter();
-    const { addToCart, removeFromCart } = useCart();
+    const { addToCart, removeFromCart, clearCart} = useCart();
 
     useEffect(() => {
         const crt = JSON.parse(localStorage.getItem('cart') || '[]');
@@ -51,15 +51,14 @@ export default function CartPage() {
         setCart(updatedCart);
         localStorage.setItem('cart', JSON.stringify(updatedCart));
         removeFromCart(id);
+        setToastMessage("Sản phẩm đã được xóa khỏi giỏ hàng.");
     };
 
     const handleClearCart = () => {
         setCart([]);
         localStorage.removeItem('cart');
-        // Nếu dùng context, gọi luôn context để sync:
-        if (typeof removeFromCart === "function") {
-            cart.forEach((item) => removeFromCart(item.id));
-        }
+        clearCart();
+        setToastMessage("Giỏ hàng đã được xóa.");
     };
 
     const handleToggleFavorite = (id: number) => {

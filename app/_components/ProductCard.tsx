@@ -29,7 +29,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         onViewDetails(product);
     };
 
-    if (!mounted) return null; // 💥 tránh render lệch giữa SSR & CSR
+    if (!mounted) return null;
 
     return (
         <article 

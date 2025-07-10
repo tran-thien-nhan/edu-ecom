@@ -5,11 +5,10 @@ import clsx from "clsx";
 
 const Toast: React.FC<{ message: string; onClose: () => void }> = ({ message, onClose }) => {
   useEffect(() => {
-    const timer = setTimeout(onClose, 3500); // show slightly longer
+    const timer = setTimeout(onClose, 3500); 
     return () => clearTimeout(timer);
   }, [onClose]);
 
-  // Icon & theme logic
   const isSuccess = /thêm|đã|thành công/i.test(message);
   const isError = /lỗi|thất bại|không/i.test(message);
   const isInfo = !isSuccess && !isError;
