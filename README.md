@@ -78,7 +78,7 @@ npm start
 
 * ✅ Next.js (Pages Router)
 * 🎨 Tailwind CSS
-* 🤖 Gemini API (qua fetch)
+* 🤖 Gemini (qua fetch)
 * 💾 localStorage (giỏ hàng, yêu thích, lịch sử)
 * 💡 React Context API (quản lý trạng thái toàn cục)
 
@@ -90,4 +90,5 @@ npm start
 * [x] Thêm vào giỏ hàng, xem chi tiết
 * [x] Lưu khóa học yêu thích
 * [x] Lịch sử đã xem
-* [x] Gợi ý khóa học bằng AI (Gemini)
+* [x] Gợi ý khóa học bằng AI 
+* [x] AI Chatbot
