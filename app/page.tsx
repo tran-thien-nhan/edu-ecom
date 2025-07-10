@@ -1,103 +1,244 @@
+"use client";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import Image from "next/image";
+import { Product } from "./_interface/interface";
+import { mockProducts } from "./_data/mockProducts";
+import { fetchAISuggestions, formatCurrency } from "./_utils/util";
+import { Search, Star, Heart, Bot, Send, Loader, Sparkles } from 'lucide-react';
+import ProductCard from "./_components/ProductCard";
+import CourseDetailPage from "./_components/CourseDetailPage";
+import { Fireworks } from "./_components/Fireworks";
+import SkeletonCard from "./_components/SkeletonCard";
+import ProductModal from "./_components/ProductModal";
+import PurchaseModal from "./_components/PurchaseModal";
+import Toast from "./_components/Toast";
+import Chatbot from "./_components/Chatbot";
+import { useLocalStorageState } from "./_hooks/useLocalStorageState";
+import { useRouter } from "next/navigation";
+import { useCart } from "./_context/CartContextType";
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [products] = useState<Product[]>(mockProducts);
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>(products);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [priceFilter, setPriceFilter] = useState('all');
+  const [categoryFilter, setCategoryFilter] = useState('all');
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
+  const [favorites, setFavorites] = useLocalStorageState<number[]>('favorites', []);
+  const [recentlyViewed, setRecentlyViewed] = useLocalStorageState<number[]>('recentlyViewed', []);
+  const [cart, setCart] = useLocalStorageState<Product[]>('cart', []);
+
+  const [courseDetail, setCourseDetail] = useState<Product | null>(null);
+  const [isPurchaseModalOpen, setIsPurchaseModalOpen] = useState(false);
+
+  const [aiSuggestions, setAiSuggestions] = useState<Product[]>([]);
+  const [isSuggestionLoading, setIsSuggestionLoading] = useState(false);
+  const [suggestionError, setSuggestionError] = useState<string | null>(null);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [showFireworks, setShowFireworks] = useState(false);
+  const router = useRouter();
+  const { addToCart } = useCart();
+
+  useEffect(() => { localStorage.setItem('favorites', JSON.stringify(favorites)); }, [favorites]);
+  useEffect(() => { localStorage.setItem('recentlyViewed', JSON.stringify(recentlyViewed)); }, [recentlyViewed]);
+  useEffect(() => { localStorage.setItem('cart', JSON.stringify(cart)); }, [cart]);
+
+  useEffect(() => {
+    let tempProducts = [...products];
+    if (searchTerm) {
+      tempProducts = tempProducts.filter(p => p.name.toLowerCase().includes(searchTerm.toLowerCase()));
+    }
+    if (priceFilter !== 'all') {
+      tempProducts = tempProducts.filter(p => {
+        if (priceFilter === '<500') return p.price < 500000;
+        if (priceFilter === '500-1m') return p.price >= 500000 && p.price <= 1000000;
+        if (priceFilter === '>1m') return p.price > 1000000;
+        return true;
+      });
+    }
+    if (categoryFilter !== 'all') {
+      tempProducts = tempProducts.filter(p => p.category === categoryFilter);
+    }
+    setFilteredProducts(tempProducts);
+  }, [searchTerm, priceFilter, categoryFilter, products]);
+
+  const handleToggleFavorite = useCallback((id: number) => {
+    setFavorites(prev => {
+      if (prev.includes(id)) {
+        setToastMessage('Đã xóa khỏi yêu thích');
+        return prev.filter(favId => favId !== id);
+      } else {
+        setToastMessage('Đã thêm vào yêu thích!');
+        return [...prev, id];
+      }
+    });
+  }, []);
+
+  const triggerFireworks = () => {
+    setShowFireworks(true);
+    setTimeout(() => {
+      setShowFireworks(false);
+    }, 4500);
+  };
+
+  const handleAddToCart = useCallback((product: Product) => {
+    setCart(prevCart => {
+      const isProductInCart = prevCart.some(item => item.id === product.id);
+      if (isProductInCart) {
+        setToastMessage('Sản phẩm đã có trong giỏ hàng');
+        return prevCart;
+      }
+      return [...prevCart, product];
+    });
+    addToCart(product);
+    setToastMessage(`🎉 Đã thêm "${product.name}" vào giỏ hàng`);
+    triggerFireworks();
+  }, []);
+
+  const handleViewDetails = useCallback((product: Product) => {
+    setSelectedProduct(product);
+    setRecentlyViewed(prev => {
+      const newHistory = [product.id, ...prev.filter(id => id !== product.id)];
+      return newHistory.slice(0, 10);
+    });
+  }, []);
+
+  const handleViewCurriculum = (product: Product) => {
+    router.push(`/course-detail/${product.slug}`);
+  };
+
+  const handleGetSuggestions = useCallback(async () => {
+    setIsSuggestionLoading(true);
+    setSuggestionError(null);
+    setAiSuggestions([]);
+
+    try {
+      const suggestions = await fetchAISuggestions(
+        'user-123',
+        products,
+        cart,
+        favorites,
+        recentlyViewed
+      );
+      setAiSuggestions(suggestions);
+    } catch (error: any) {
+      console.error("Lỗi khi lấy gợi ý:", error);
+      setSuggestionError(error.message || 'Lỗi không xác định');
+    } finally {
+      setIsSuggestionLoading(false);
+    }
+  }, [products, cart, favorites, recentlyViewed]);
+
+  if (courseDetail) {
+    return (
+      <>
+        <Fireworks isVisible={showFireworks} onAnimationEnd={() => setShowFireworks(false)} />
+        {toastMessage && <Toast message={toastMessage} onClose={() => setToastMessage(null)} />}
+        <CourseDetailPage
+          product={courseDetail}
+          onBack={() => setCourseDetail(null)}
+          onLessonClick={() => setIsPurchaseModalOpen(true)}
+          onAddToCart={handleAddToCart}
+          triggerFireworks={triggerFireworks}
+          setToastMessage={setToastMessage}
+        />
+      </>
+    );
+  }
+
+  return (
+    <div className="bg-gray-50 min-h-screen font-sans">
+      <Fireworks isVisible={showFireworks} onAnimationEnd={() => setShowFireworks(false)} />
+      <main className="container mx-auto p-4 md:p-8">
+        <>
+          <div className="bg-white p-6 rounded-lg shadow-md mb-8">
+            <div className="flex flex-col md:flex-row items-center justify-between">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-800 flex items-center">
+                  Gợi ý thông minh <Sparkles className="w-5 h-5 ml-2 text-yellow-500" />
+                </h2>
+              </div>
+              <button
+                onClick={handleGetSuggestions}
+                disabled={isSuggestionLoading}
+                className="mt-4 md:mt-0 flex items-center justify-center bg-gradient-to-r from-purple-500 to-indigo-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-purple-600 hover:to-indigo-700 transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isSuggestionLoading ? (
+                  <>
+                    <Loader className="animate-spin mr-2" size={20} />
+                    <span>Đang phân tích...</span>
+                  </>
+                ) : (
+                  <span>Lấy gợi ý mới</span>
+                )}
+              </button>
+            </div>
+            {suggestionError && (
+              <div className="mt-4 text-red-600 bg-red-100 p-3 rounded-lg">
+                {suggestionError}
+              </div>
+            )}
+            {(isSuggestionLoading || aiSuggestions.length > 0) && (
+              <div className="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {isSuggestionLoading ? (
+                  Array.from({ length: 3 }).map((_, index) => (
+                    <SkeletonCard key={index} />
+                  ))
+                ) : (
+                  aiSuggestions.map(p => (
+                    <ProductCard
+                      key={`suggestion-${p.id}`}
+                      product={p}
+                      onViewDetails={handleViewDetails}
+                      onToggleFavorite={handleToggleFavorite}
+                      isFavorite={favorites.includes(p.id)}
+                    />
+                  ))
+                )}
+              </div>
+            )}
+          </div>
+          <h2 className="text-3xl font-bold text-gray-800 mb-6">Tất cả khóa học</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {filteredProducts.map(p => (
+              <ProductCard
+                key={p.id}
+                product={p}
+                onViewDetails={handleViewDetails}
+                onToggleFavorite={handleToggleFavorite}
+                isFavorite={favorites.includes(p.id)}
+              />
+            ))}
+          </div>
+          {filteredProducts.length === 0 && (
+            <p className="text-gray-500 text-center col-span-full py-10">
+              Không tìm thấy sản phẩm nào phù hợp.
+            </p>
+          )}
+        </>
       </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      <ProductModal
+        product={selectedProduct}
+        onClose={() => setSelectedProduct(null)}
+        onViewCurriculum={handleViewCurriculum}
+        onAddToCart={handleAddToCart}
+      />
+      <PurchaseModal
+        isOpen={isPurchaseModalOpen}
+        onClose={() => setIsPurchaseModalOpen(false)}
+      />
+      {toastMessage && (
+        <Toast
+          message={toastMessage}
+          onClose={() => setToastMessage(null)}
+        />
+      )}
+      <Chatbot
+        allProducts={products}
+        handleAddToCart={handleAddToCart}
+        handleViewCurriculum={handleViewCurriculum}
+      />
     </div>
   );
 }
