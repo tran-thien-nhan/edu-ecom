@@ -6,6 +6,9 @@ Dự án web hiển thị và bán khóa học, được xây dựng bằng:
 - Tailwind CSS
 - Google Gemini API (cho gợi ý AI)
 
+# link demo:
+https://edu-ecom.vercel.app/
+
 ---
 
 ## 🚀 Cài đặt và chạy dự án
