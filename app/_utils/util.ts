@@ -30,35 +30,39 @@ export const fetchAISuggestions = async (
   if (cartNames.length) promptLines.push(`- Giỏ hàng: ${cartNames.join(', ')}`);
   if (favoriteNames.length) promptLines.push(`- Đã thích: ${favoriteNames.join(', ')}`);
   if (viewedNames.length) promptLines.push(`- Đã xem: ${viewedNames.join(', ')}`);
-  console.log("📝 Hành vi người dùng:", promptLines);
 
-  const prompt = promptLines.length
-    ? `Một người dùng có hành vi sau:\n${promptLines.join('\n')}\n👉 Dựa trên đó, gợi ý tối đa 3 chủ đề khóa học phù hợp nhất. Trả về tên chủ đề, cách nhau bởi dấu phẩy.`
-    : `Gợi ý 3 chủ đề khóa học phổ biến cho người mới bắt đầu trong các lĩnh vực như Lập trình, Kinh doanh, Thiết kế.`
+  const behaviorText = promptLines.join('\n') || "Không có hành vi nào đáng chú ý.";
+
+  const productDescriptions = allProducts.map(p => 
+    `- ID: ${p.id}\n  Tên: ${p.name}\n  Danh mục: ${p.category}\n  Mô tả: ${p.description}`
+  ).join('\n\n');
+
+  const prompt = `
+Người dùng có các hành vi như sau:
+${behaviorText}
+
+Dưới đây là danh sách khóa học có sẵn:
+${productDescriptions}
+
+👉 Dựa vào hành vi trên, chọn ra tối đa 3 khóa học phù hợp nhất từ danh sách trên. Chỉ trả về **ID khóa học**, phân cách bằng dấu phẩy. Không thêm bất kỳ giải thích nào.
+`;
 
   try {
     const model = genAI.getGenerativeModel({ model: aiModel });
     const result = await model.generateContent(prompt);
     const text = await result.response.text();
 
-    console.log("🧠 Gemini gợi ý chủ đề:", text);
+    console.log("🧠 Gemini gợi ý ID:", text);
 
-    const topics = text.split(',').map(t => t.trim().toLowerCase()).filter(Boolean);
+    const matchedIds = (text.match(/\d+/g) || []).map(id => parseInt(id));
     const excludeIds = new Set([...cart.map(p => p.id), ...favorites, ...recentlyViewed]);
 
-    const matched = allProducts.filter(p =>
-      !excludeIds.has(p.id) &&
-      topics.some(topic =>
-        p.name.toLowerCase().includes(topic) ||
-        p.category.toLowerCase().includes(topic) ||
-        p.description.toLowerCase().includes(topic)
-      )
-    );
+    const finalSuggestions = allProducts
+      .filter(p => matchedIds.includes(p.id) && !excludeIds.has(p.id))
+      .slice(0, 3);
 
-    const unique = Array.from(new Map(matched.map(p => [p.id, p])).values());
-
-    if (unique.length) return unique.slice(0, 3);
-    throw new Error("Không tìm được khóa học phù hợp từ chủ đề Gemini.");
+    if (finalSuggestions.length) return finalSuggestions;
+    throw new Error("Không tìm được khóa học phù hợp từ Gemini.");
   } catch (err) {
     console.warn("⚠️ Lỗi khi gọi Gemini, fallback logic đang chạy:", err);
 
@@ -86,6 +90,7 @@ export const fetchAISuggestions = async (
     });
   }
 };
+
 
 export const getGeminiSuggestedProducts = async (userInput: string, allProducts: Product[]): Promise<Product[]> => {
   const model = genAI.getGenerativeModel({ model: aiModel });
