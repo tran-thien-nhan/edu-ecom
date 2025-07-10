@@ -14,7 +14,7 @@ Dự án web hiển thị và bán khóa học, được xây dựng bằng:
 ### 1. Clone repo
 
 ```bash
-git clone https://github.com/your-username/your-repo.git
+git clone https://github.com/tran-thien-nhan/edu-ecom.git
 cd your-repo
 ````
 
