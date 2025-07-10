@@ -59,11 +59,6 @@ export default function Header() {
                         )}
                     >
                         <Heart size={22} />
-                        {favorites.length > 0 && (
-                            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] rounded-full w-4 h-4 flex items-center justify-center">
-                                {favorites.length}
-                            </span>
-                        )}
                     </button>
                     <button
                         onClick={() => router.push("/cart")}
