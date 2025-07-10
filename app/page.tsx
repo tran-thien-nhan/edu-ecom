@@ -147,11 +147,59 @@ export default function Home() {
     );
   }
 
+  const courseCategories = useMemo(() => {
+    const categories = new Set(products.map(p => p.category));
+    return ['all', ...Array.from(categories)];
+  }, [products]);
+
   return (
     <div className="bg-gray-50 min-h-screen font-sans">
       <Fireworks isVisible={showFireworks} onAnimationEnd={() => setShowFireworks(false)} />
       <main className="container mx-auto p-4 md:p-8">
         <>
+        <div className="container mx-auto px-4 py-3 border-t mb-6 bg-white rounded-lg shadow-sm">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+            <div className="relative w-full md:hidden">
+              <input 
+                type="text" 
+                placeholder="Tìm kiếm khóa học..." 
+                className="w-full pl-10 pr-4 py-2 border rounded-full focus:outline-none focus:ring-2 focus:ring-indigo-400" 
+                value={searchTerm} 
+                onChange={e => setSearchTerm(e.target.value)} 
+              />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+            </div>
+            <div className="flex items-center space-x-4 text-sm">
+              <div className="flex items-center space-x-2">
+                <span className="font-semibold text-gray-700">Loại:</span>
+                <select
+                  value={categoryFilter}
+                  onChange={e => setCategoryFilter(e.target.value)}
+                  className="border rounded-md px-2 py-1 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                >
+                  {courseCategories.map(category => (
+                    <option key={category} value={category}>
+                      {category === 'all' ? 'Tất cả' : category}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="flex items-center space-x-2">
+                <span className="font-semibold text-gray-700">Giá:</span>
+                <select 
+                  value={priceFilter} 
+                  onChange={e => setPriceFilter(e.target.value)} 
+                  className="border rounded-md px-2 py-1 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                >
+                  <option value="all">Tất cả</option>
+                  <option value="<500">&lt; 500K</option>
+                  <option value="500-1m">500K - 1 triệu</option>
+                  <option value=">1m">&gt; 1 triệu</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
           <div className="bg-white p-6 rounded-lg shadow-md mb-8">
             <div className="flex flex-col md:flex-row items-center justify-between">
               <div>
